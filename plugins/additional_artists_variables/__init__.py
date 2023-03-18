@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2018-2022 Bob Swift (rdswift)
+# Copyright (C) 2023 Ruud van Asseldonk (ruuda)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,7 +31,7 @@ this plugin.
 <br /><br />
 Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/additional_artists_variables/docs/README.md">user guide</a> on GitHub for more information.
 '''
-PLUGIN_VERSION = '0.8.1'
+PLUGIN_VERSION = '0.8.2'
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7']
 PLUGIN_LICENSE = 'GPL-2.0-or-later'
 PLUGIN_LICENSE_URL = 'https://www.gnu.org/licenses/gpl-2.0.html'
