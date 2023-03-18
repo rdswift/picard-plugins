@@ -43,6 +43,7 @@ variables provided by this plugin.
 * **_artists_album_all_legal** - All album artists listed (legal names), separated by strings provided from the release entry
 * **_artists_album_all_std_multi** - All album artists listed (standardized), as a multi-value
 * **_artists_album_all_cred_multi** - All album artists listed (as credited), as a multi-value
+* **_artists_album_all_sort_multi** - All album artists listed (sort names), as a multi-value
 * **_artists_album_all_legal_multi** - All album artists listed (legal names), as a multi-value
 * **_artists_album_all_sort_primary** - The primary / first album artist listed (sort name) followed by all additional album artists (standardized), separated by strings provided from the release entry
 * **_artists_album_all_types** - All album artist types, as a multi-value
@@ -72,6 +73,7 @@ variables provided by this plugin.
 * **_artists_track_all_legal** - All track artists listed (legal names), separated by strings provided from the track entry
 * **_artists_track_all_std_multi** - All track artists listed (standardized), as a multi-value
 * **_artists_track_all_cred_multi** - All track artists listed (as credited), as a multi-value
+* **_artists_track_all_sort_multi** - All track artists listed (sort names), as a multi-value
 * **_artists_track_all_legal_multi** - All track artists listed (legal names), as a multi-value
 * **_artists_track_all_sort_primary** - The primary / first track artist listed (sort name) followed by all additional track artists (standardized), separated by strings provided from the track entry
 * **_artists_track_all_types** - All track artist types, as a multi-value

@@ -205,6 +205,8 @@ def process_artists(album_id, source_metadata, destination_metadata, source_type
         destination_metadata['~artists_{0}_all_std_multi'.format(source_type,)] = std_artist_list
     if cred_artist_list:
         destination_metadata['~artists_{0}_all_cred_multi'.format(source_type,)] = cred_artist_list
+    if sort_artist_list:
+        destination_metadata['~artists_{0}_all_sort_multi'.format(source_type,)] = sort_artist_list
     if legal_artist_list:
         destination_metadata['~artists_{0}_all_legal_multi'.format(source_type,)] = legal_artist_list
     if sort_pri_artist:
