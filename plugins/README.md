@@ -23,6 +23,14 @@ variables provided by this plugin.
 
 -------
 
+## Additional Artists Details \[[Download](https://github.com/rdswift/picard-plugins/raw/2.0_RDS_Plugins/plugins/additional_artists_details/additional_artists_details.zip)\]
+
+This plugin provides specialized album and track variables with artist details such as type, gender, begin and end dates, location (begin, end and current) and country code (begin, end and current) for use in tagging and naming scripts.  A variable will only be created if the information is returned from MusicBrainz.  For example, if a gender has not been specified in the MusicBrainz data then the **%\_artist_\{artist_id\}_gender%** variable will not be created.
+
+***NOTE:*** This plugin makes additional calls to the MusicBrainz website api for the information, which will slow down retrieving album information from MusicBrainz.  This will be particularly noticable when there are many different album or track artists, such as on a \[Various Artists\] release.
+
+-------
+
 ## Persistent Variables \[[Download](https://github.com/rdswift/picard-plugins/raw/2.0_RDS_Plugins/plugins/persistent_variables/persistent_variables.zip)\]
 
 This plugin provides the ability to store and retrieve script variables that persist across tracks and albums.
