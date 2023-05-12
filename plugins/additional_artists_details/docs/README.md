@@ -4,7 +4,15 @@
 
 This plugin provides specialized album and track variables with artist details such as type, gender, begin and end dates, location (begin, end and current) and country code (begin, end and current) for use in tagging and naming scripts.
 
-***NOTE:*** This plugin makes additional calls to the MusicBrainz website api for the information, which will slow down retrieving album information from MusicBrainz.  This will be particularly noticable when there are many different album or track artists, such as on a \[Various Artists\] release.
+***NOTE:*** This plugin makes additional calls to the MusicBrainz website api for the information, which will slow down retrieving album information from MusicBrainz.  This will be particularly noticable when there are many different album or track artists, such as on a \[Various Artists\] release.  There is an option to disable track artist processing, which can significantly increase the processing speed if you are only interested in album artist details.
+
+---
+
+## Option Settings
+
+The plugin adds a settings page under the "Plugins" section under "Options..." from Picard's main menu.  This allows you to control how the plugin operates with respect to processing track artists and detail included in the artist location variables' content.
+
+![Additional Artists Details Option Settings](option_settings.png "Additional Artists Details Option Settings")
 
 ---
 
@@ -12,7 +20,7 @@ This plugin provides specialized album and track variables with artist details s
 
 This plugin reads the album and track metadata provided to Picard, extracts the list of associated artists, retrieves the detailed information from the MusicBrainz website, and exposes the information in a number of additional variables for use in Picard scripts.
 
-## Variables Created
+### Variables Created
 
 * **\_artist_\{artist_id\}_begin** - The begin date (birth date) of the artist
 * **\_artist_\{artist_id\}_begin_country** - The begin two-character country code of the artist

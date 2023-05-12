@@ -26,13 +26,25 @@
 from collections import namedtuple
 from functools import partial
 
-from picard import log
+from picard import (
+    config,
+    log,
+)
+from picard.album import register_album_post_removal_processor
 from picard.metadata import (
     register_album_metadata_processor,
     register_track_metadata_processor,
 )
 from picard.plugin import PluginPriority
+from picard.plugins.additional_artists_details.ui_options_additional_artists_details import (
+    Ui_AdditionalArtistsDetailsOptionsPage,
+)
 from picard.webservice.api_helpers import MBAPIHelper
+
+from picard.ui.options import (
+    OptionsPage,
+    register_options_page,
+)
 
 
 PLUGIN_NAME = 'Additional Artists Details'
@@ -40,12 +52,13 @@ PLUGIN_AUTHOR = 'Bob Swift (rdswift)'
 PLUGIN_DESCRIPTION = '''
 This plugin provides specialized album and track variables with artist details for use in tagging and naming scripts.  Note that this creates
 additional calls to the MusicBrainz API for the artist and area information, and this will slow down processing.  This will be particularly
-noticable when there are many different album or track artists, such as on a [Various Artists] release.
+noticable when there are many different album or track artists, such as on a [Various Artists] release.  There is an option to disable track
+artist processing, which can significantly increase the processing speed if you are only interested in album artist details.
 <br /><br />
 Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/additional_artists_details/docs/README.md">user
 guide</a> on GitHub for more information.
 '''
-PLUGIN_VERSION = '0.2'
+PLUGIN_VERSION = '0.3'
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.8']
 PLUGIN_LICENSE = 'GPL-2.0-or-later'
 PLUGIN_LICENSE_URL = 'https://www.gnu.org/licenses/gpl-2.0.html'
@@ -54,7 +67,7 @@ PLUGIN_USER_GUIDE_URL = 'https://github.com/rdswift/picard-plugins/blob/2.0_RDS_
 
 # Named tuples for code clarity
 Area = namedtuple('Area', ['parent', 'name', 'country', 'type', 'type_text'])
-MetadataPair = namedtuple('MetadataPair', ['source', 'target'])
+MetadataPair = namedtuple('MetadataPair', ['artists', 'target'])
 
 # MusicBrainz ID codes for relationship types
 RELATIONSHIP_TYPE_PART_OF = 'de7cc874-8b1b-3a05-8272-f3834c968fb7'
@@ -68,11 +81,15 @@ AREA_TYPE_MUNICIPALITY = '17246454-5ac4-36a1-b81a-4753eb2dab20'
 EXCLUDE_AREA_TYPES = {AREA_TYPE_MUNICIPALITY, AREA_TYPE_COUNTY}
 
 # Standard text for arguments
+ALBUM_ARTISTS = 'album_artists'
 ARTIST = 'artist'
 ARTIST_REQUESTS = 'artist_requests'
 AREA = 'area'
 AREA_REQUESTS = 'area_requests'
 ISO_CODES = 'iso-3166-1-codes'
+OPT_AREA_DETAILS = 'aad_area_details'
+OPT_PROCESS_TRACKS = 'aad_process_tracks'
+TRACKS = 'tracks'
 
 
 def log_helper(text, *args):
@@ -139,20 +156,28 @@ class ArtistDetailsPlugin:
         AREA: {},
         AREA_REQUESTS: set(),
     }
-    processing_count = 0
-    ALBUMS = {}
+    album_processing_count = {}
+    albums = {}
 
-    def _add_target(self, album_id, source_metadata, target_metadata):
+    def _make_empty_target(self, album_id):
+        """Create an empty album target node if it doesn't exist.
+
+        Args:
+            album_id (str): MBID of the album.
+        """
+        if album_id not in self.albums:
+            self.albums[album_id] = {ALBUM_ARTISTS: set(), TRACKS: []}
+
+    def _add_target(self, album_id, artists, target_metadata):
         """Add a metadata target to update for an album.
 
         Args:
             album_id (str): MBID of the album.
-            source_metadata (dict): Source metadata to check for artists.
-            target_metadata (dict): Target metadata to update.
+            artists (set): Set of artists to include.
+            target_metadata (Metadata): Target metadata to update.
         """
-        if album_id not in self.ALBUMS:
-            self.ALBUMS[album_id] = []
-        self.ALBUMS[album_id].append(MetadataPair(source_metadata, target_metadata))
+        self._make_empty_target(album_id)
+        self.albums[album_id][TRACKS].append(MetadataPair(artists, target_metadata))
 
     def _remove_album(self, album_id):
         """Removes an album from the metadata processing dictionary.
@@ -161,7 +186,8 @@ class ArtistDetailsPlugin:
             album_id (str): MBID of the album to remove.
         """
         log.debug(*log_helper("Removing album '%s'", album_id))
-        self.ALBUMS.pop(album_id, None)
+        self.albums.pop(album_id, None)
+        self.album_processing_count.pop(album_id, None)
 
     def _album_add_request(self, album):
         """Increment the number of pending requests for an album.
@@ -169,7 +195,9 @@ class ArtistDetailsPlugin:
         Args:
             album (Album): The Album object to use for the processing.
         """
-        self.processing_count += 1
+        if album.id not in self.album_processing_count:
+            self.album_processing_count[album.id] = 0
+        self.album_processing_count[album.id] += 1
         album._requests += 1
 
     def _album_remove_request(self, album):
@@ -178,106 +206,106 @@ class ArtistDetailsPlugin:
         Args:
             album (Album): The Album object to use for the processing.
         """
-        self.processing_count -= 1
+        if album.id not in self.album_processing_count:
+            self.album_processing_count[album.id] = 1
+        self.album_processing_count[album.id] -= 1
         album._requests -= 1
         album._finalize_loading(None)   # pylint: disable=protected-access
 
-    def make_album_vars(self, album, album_metadata, release_metadata):
+    def remove_album(self, album):
+        """Remove the album from the albums processing dictionary.
+
+        Args:
+            album (Album): The album object to remove.
+        """
+        self._remove_album(album.id)
+
+    def make_album_vars(self, album, album_metadata, _release_metadata):
         """Process album artists.
 
         Args:
             album (Album): The Album object to use for the processing.
             album_metadata (Metadata): Metadata object for the album.
-            release_metadata (dict): Dictionary of release data from MusicBrainz api.
+            _release_metadata (dict): Dictionary of release data from MusicBrainz api.
         """
-        album_id = release_metadata['id'] if release_metadata else 'No Album ID'
-        self._process_artists(album, album_id, release_metadata, album_metadata, 'album')
+        artists = set(artist.id for artist in album.get_album_artists())
+        self._make_empty_target(album.id)
+        self.albums[album.id][ALBUM_ARTISTS] = artists
+        if not config.setting[OPT_PROCESS_TRACKS]:
+            log.info(*log_helper("Track artist processing is disabled."))
+        self._artist_processing(artists, album, album_metadata, 'Album')
 
-    def make_track_vars(self, album, album_metadata, track_metadata, release_metadata):
+    def make_track_vars(self, album, album_metadata, track_metadata, _release_metadata):
         """Process track artists.
 
         Args:
             album (Album): The Album object to use for the processing.
             album_metadata (Metadata): Metadata object for the album.
             track_metadata (dict): Dictionary of track data from MusicBrainz api.
-            release_metadata (dict): Dictionary of release data from MusicBrainz api.
+            _release_metadata (dict): Dictionary of release data from MusicBrainz api.
         """
-        album_id = release_metadata['id'] if release_metadata else 'No Album ID'
-        self._process_artists(album, album_id, track_metadata, album_metadata, 'track')
-
-    def _process_artists(self, album, album_id, source_metadata, destination_metadata, source_type):
-        """Extracts a list of artists to process from the source metadata, and retrieves the
-        information for artists not already processed.
-
-        Args:
-            album (Album): The Album object to use for the processing.
-            album_id (str): MBID of the album to process.
-            source_metadata (dict): Source metadata to check for artists.
-            destination_metadata (dict): Metadata to update with new variables.
-            source_type (str): Source type (album or track) for error messages.
-        """
+        artists = set()
+        source_type = 'track'
         # Test for valid metadata node.
         # The 'artist-credit' key should always be there.
         # This check is to avoid a runtime error if it doesn't exist for some reason.
-        if 'artist-credit' in source_metadata:
-            for artist_credit in source_metadata['artist-credit']:
-                if 'artist' in artist_credit:
-                    if 'id' in artist_credit['artist']:
-                        temp_id = artist_credit['artist']['id']
-                        if temp_id not in self.result_cache[ARTIST_REQUESTS]:
-                            self.result_cache[ARTIST_REQUESTS].add(temp_id)
-                            log.debug(*log_helper('Retrieving artist ID %s information from MusicBrainz.', temp_id))
-                            self._get_artist_info(temp_id, album, album_id, source_metadata, destination_metadata, source_type)
-                        else:
-                            log.debug(*log_helper('Artist ID %s information retrieved from cache.', temp_id))
-                else:
-                    # No 'artist' specified.  Log as an error.
-                    self._metadata_error(album_id, 'artist-credit.artist', source_type)
-        else:
-            # No valid metadata found.  Log as error.
-            self._metadata_error(album_id, 'artist-credit', source_type)
-        self._add_target(album_id, source_metadata, destination_metadata)
-        self._save_artist_metadata(album_id, source_type)
+        if config.setting[OPT_PROCESS_TRACKS]:
+            if 'artist-credit' in track_metadata:
+                for artist_credit in track_metadata['artist-credit']:
+                    if 'artist' in artist_credit:
+                        if 'id' in artist_credit['artist']:
+                            artists.add(artist_credit['artist']['id'])
+                    else:
+                        # No 'artist' specified.  Log as an error.
+                        self._metadata_error(album.id, 'artist-credit.artist', source_type)
+            else:
+                # No valid metadata found.  Log as error.
+                self._metadata_error(album.id, 'artist-credit', source_type)
+        self._artist_processing(artists, album, album_metadata, 'Track')
 
-    def _save_artist_metadata(self, album_id, source_type):
-        """Extracts a list of artists to process from the source metadata, and retrieves the
-        information for artists not already processed.
+    def _artist_processing(self, artists, album, destination_metadata, source_type):
+        """Retrieves the information for each artist not already processed.
+
+        Args:
+            artists (set): Set of artist MBIDs to process.
+            album (Album): Album object to use for the processing.
+            destination_metadata (Metadata): Metadata object to update with the new variables.
+            source_type (str): Source type (album or track) for logging messages.
+        """
+        for temp_id in artists:
+            if temp_id not in self.result_cache[ARTIST_REQUESTS]:
+                self.result_cache[ARTIST_REQUESTS].add(temp_id)
+                log.debug(*log_helper('Retrieving artist ID %s information from MusicBrainz.', temp_id))
+                self._get_artist_info(temp_id, album)
+            else:
+                log.debug(*log_helper('%s artist ID %s information available from cache.', source_type, temp_id))
+        self._add_target(album.id, artists, destination_metadata)
+        self._save_artist_metadata(album.id)
+
+    def _save_artist_metadata(self, album_id):
+        """Saves the new artist details variables to the metadata targets for the specified album.
 
         Args:
             album_id (str): MBID of the album to process.
-            source_type (str): Source type (album or track) for error messages.
         """
-        if self.processing_count:
+        if album_id in self.album_processing_count and self.album_processing_count[album_id]:
             return
-        if album_id not in self.ALBUMS or not self.ALBUMS[album_id]:
+        if album_id not in self.albums or not self.albums[album_id][TRACKS]:
             log.error(*log_helper("No metadata targets found for album '%s'", album_id))
             return
-        for item in self.ALBUMS[album_id]:
-            source_metadata = item.source
+        for item in self.albums[album_id][TRACKS]:
+            # Add album artists to track so they are available in the metadata
+            artists = self.albums[album_id][ALBUM_ARTISTS].copy().union(item.artists)
             destination_metadata = item.target
-            # Test for valid metadata node.
-            # The 'artist-credit' key should always be there.
-            # This check is to avoid a runtime error if it doesn't exist for some reason.
-            if 'artist-credit' not in source_metadata:
-                # No valid metadata found.  Log as error.
-                self._metadata_error(album_id, 'artist-credit', source_type)
-                continue
-            for artist_credit in source_metadata['artist-credit']:
-                if 'artist' not in artist_credit:
-                    # No 'artist' specified.  Log as an error.
-                    self._metadata_error(album_id, 'artist-credit.artist', source_type)
-                    continue
-                if 'id' not in artist_credit['artist']:
-                    continue
-                temp_id = artist_credit['artist']['id']
-                if temp_id in self.result_cache[ARTIST]:
-                    self._set_artist_metadata(destination_metadata, temp_id, self.result_cache[ARTIST][temp_id])
+            for artist in artists:
+                if artist in self.result_cache[ARTIST]:
+                    self._set_artist_metadata(destination_metadata, artist, self.result_cache[ARTIST][artist])
 
     def _set_artist_metadata(self, destination_metadata, artist_id, artist_info):
         """Adds the artist information to the destination metadata.
 
         Args:
-            destination_metadata (dict): Metadata to update with new variables.
+            destination_metadata (Metadata): Metadata object to update with new variables.
             artist_id (str): MBID of the artist to update.
             artist_info (dict): Dictionary of information for the artist.
         """
@@ -294,32 +322,23 @@ class ArtistDetailsPlugin:
             else:
                 _set_item(item, artist_info[item])
 
-    def _get_artist_info(self, artist_id, album, album_id, source_metadata, destination_metadata, source_type):
+    def _get_artist_info(self, artist_id, album):
         """Gets the artist information from the MusicBrainz website.
 
         Args:
             artist_id (str): MBID of the artist to retrieve.
             album (Album): The Album object to use for the processing.
-            album_id (str): MBID of the album to process.
-            source_metadata (dict): Source metadata to check for artists.
-            destination_metadata (dict): Metadata to update with new variables.
-            source_type (str): Source type (album or track) for error messages.
         """
         self._album_add_request(album)
         helper = CustomHelper(album.tagger.webservice)
         handler = partial(
             self._artist_submission_handler,
-            album_id=album_id,
-            source_metadata=source_metadata,
-            destination_metadata=destination_metadata,
             artist=artist_id,
             album=album,
-            source_type=source_type,
             )
         return helper.get_artist_by_id(artist_id, handler)
 
-    def _artist_submission_handler(self, document, _reply, error, source_metadata=None, destination_metadata=None,
-                                   artist=None, album=None, album_id=None, source_type=None):
+    def _artist_submission_handler(self, document, _reply, error, artist=None, album=None):
         """Handles the response from the webservice requests for artist information.
         """
         try:
@@ -339,22 +358,18 @@ class ArtistDetailsPlugin:
                     area_id = document[item]['id']
                     artist_info[item] = area_id
                     if area_id not in self.result_cache[AREA_REQUESTS]:
-                        self._get_area_info(area_id, album, album_id, source_metadata, destination_metadata, source_type)
+                        self._get_area_info(area_id, album)
             self.result_cache[ARTIST][artist] = artist_info
         finally:
             self._album_remove_request(album)
-            self._save_artist_metadata(album_id, source_type)
+            self._save_artist_metadata(album.id)
 
-    def _get_area_info(self, area_id, album, album_id, source_metadata, destination_metadata, source_type):
+    def _get_area_info(self, area_id, album):
         """Gets the area information from the MusicBrainz website.
 
         Args:
             area_id (str): MBID of the area to retrieve.
             album (Album): The Album object to use for the processing.
-            album_id (str): MBID of the album to process.
-            source_metadata (dict): Source metadata to check for artists.
-            destination_metadata (dict): Metadata to update with new variables.
-            source_type (str): Source type (album or track) for error messages.
         """
         self.result_cache[AREA_REQUESTS].add(area_id)
         self._album_add_request(album)
@@ -364,15 +379,10 @@ class ArtistDetailsPlugin:
             self._area_submission_handler,
             area=area_id,
             album=album,
-            album_id=album_id,
-            source_metadata=source_metadata,
-            destination_metadata=destination_metadata,
-            source_type=source_type,
             )
         return helper.get_area_by_id(area_id, handler)
 
-    def _area_submission_handler(self, document, _reply, error, area=None, album=None, album_id=None,
-                                 source_metadata=None, destination_metadata=None, source_type=None):
+    def _area_submission_handler(self, document, _reply, error, area=None, album=None):
         """Handles the response from the webservice requests for area information.
         """
         try:
@@ -385,11 +395,10 @@ class ArtistDetailsPlugin:
                 self.result_cache[AREA][_id] = Area('', name, country, _type, type_text)
             if 'relations' in document:
                 for rel in document['relations']:
-                    self._parse_area_relation(_id, rel, album, name, _type, album_id, source_metadata,
-                                              destination_metadata, source_type, type_text)
+                    self._parse_area_relation(_id, rel, album, name, _type, type_text)
         finally:
             self._album_remove_request(album)
-            self._save_artist_metadata(album_id, source_type)
+            self._save_artist_metadata(album.id)
 
     @staticmethod
     def _area_logger(area_id, area_name, area_type):
@@ -402,8 +411,7 @@ class ArtistDetailsPlugin:
         """
         log.debug(*log_helper("Adding area: %s => %s of type '%s'", area_id, area_name, area_type))
 
-    def _parse_area_relation(self, area_id, area_relation, album, area_name, area_type, album_id,
-                             source_metadata, destination_metadata, source_type, area_type_text):
+    def _parse_area_relation(self, area_id, area_relation, album, area_name, area_type, area_type_text):
         """Parse an area relation to extract the area information.
 
         Args:
@@ -412,10 +420,6 @@ class ArtistDetailsPlugin:
             album (Album): The Album object to use for the processing.
             area_name (str): Name of the area providing the relationship.
             area_type (str): MBID of the type of area providing the relationship.
-            album_id (str): MBID of the album to process.
-            source_metadata (dict): Source metadata to check for artists.
-            destination_metadata (dict): Metadata to update with new variables.
-            source_type (str): Source type (album or track) for error messages.
             area_type_text (str): Text description of the area providing the relationship.
         """
         if 'type-id' not in area_relation or 'area' not in area_relation or area_relation['type-id'] != RELATIONSHIP_TYPE_PART_OF:
@@ -436,8 +440,7 @@ class ArtistDetailsPlugin:
                     self.result_cache[AREA_REQUESTS].add(_id)
             else:
                 if _id not in self.result_cache[AREA] and _id not in self.result_cache[AREA_REQUESTS]:
-                    # _area_logger(_id, name, _type)
-                    self._get_area_info(_id, album, album_id, source_metadata, destination_metadata, source_type)
+                    self._get_area_info(_id, album)
         else:
             self._area_logger(_id, name, type_text)
             self.result_cache[AREA_REQUESTS].add(_id)
@@ -488,15 +491,50 @@ class ArtistDetailsPlugin:
         """
         country = ''
         location = []
-        i = 5   # Counter to avoid potential runaway processing
+        i = 7   # Counter to avoid potential runaway processing
         while i and area_id and not country:
             i -= 1
             area = self.result_cache[AREA][area_id] if area_id in self.result_cache[AREA] else Area('', '', '', '', '')
             country = area.country
             area_id = area.parent
-            if not location or area.type not in EXCLUDE_AREA_TYPES:
+            if not location or config.setting[OPT_AREA_DETAILS] or area.type not in EXCLUDE_AREA_TYPES:
                 location.append(area.name)
         return country, ', '.join(location)
+
+
+class AdditionalArtistsDetailsOptionsPage(OptionsPage):
+    """Options page for the Additional Artists Details plugin.
+    """
+
+    NAME = "additional_artists_details"
+    TITLE = "Additional Artists Details"
+    PARENT = "plugins"
+
+    options = [
+        config.BoolOption('setting', OPT_PROCESS_TRACKS, False),
+        config.BoolOption('setting', OPT_AREA_DETAILS, False),
+    ]
+
+    def __init__(self, parent=None):
+        super(AdditionalArtistsDetailsOptionsPage, self).__init__(parent)
+        self.ui = Ui_AdditionalArtistsDetailsOptionsPage()
+        self.ui.setupUi(self)
+
+        # Enable external link
+        self.ui.format_description.setOpenExternalLinks(True)
+
+    def load(self):
+        """Load the option settings.
+        """
+        self.ui.cb_process_tracks.setChecked(config.setting[OPT_PROCESS_TRACKS])
+        self.ui.cb_area_details.setChecked(config.setting[OPT_AREA_DETAILS])
+
+    def save(self):
+        """Save the option settings.
+        """
+        # self._set_settings(config.setting)
+        config.setting[OPT_PROCESS_TRACKS] = self.ui.cb_process_tracks.isChecked()
+        config.setting[OPT_AREA_DETAILS] = self.ui.cb_area_details.isChecked()
 
 
 plugin = ArtistDetailsPlugin()
@@ -506,3 +544,6 @@ plugin = ArtistDetailsPlugin()
 # is working with the latest updated data.
 register_album_metadata_processor(plugin.make_album_vars, priority=PluginPriority.LOW)
 register_track_metadata_processor(plugin.make_track_vars, priority=PluginPriority.LOW)
+
+register_album_post_removal_processor(plugin.remove_album)
+register_options_page(AdditionalArtistsDetailsOptionsPage)
