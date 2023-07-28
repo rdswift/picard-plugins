@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020-2021 Bob Swift (rdswift)
+# Copyright (C) 2020-2021, 2023 Bob Swift (rdswift)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -43,19 +43,22 @@ When ISRCs have been submitted, a notice will be displayed showing whether or no
 the submission was successful.
 </p>
 '''
-PLUGIN_VERSION = '1.0'
-PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.3', '2.6']
+PLUGIN_VERSION = '1.1'
+PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.3', '2.6', '2.9']
 PLUGIN_LICENSE = "GPL-2.0"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.txt"
 
 import re
 
-from picard import log
+from picard import log, PICARD_VERSION
 from picard.ui.itemviews import BaseAction, register_album_action
+from picard.version import Version
 from picard.webservice.api_helpers import MBAPIHelper, _wrap_xml_metadata
 from PyQt5 import QtCore, QtWidgets
 
 RE_VALIDATE_ISRC = re.compile(r'^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$')
+
+NEW_MBAPIHelper = (PICARD_VERSION >= Version(2, 9, 0, 'beta', 2))
 
 XML_HEADER = '<recording-list>'
 XML_TEMPLATE = '<recording id="{0}"><isrc-list count="1"><isrc id="{1}" /></isrc-list></recording>'
@@ -226,10 +229,10 @@ class SubmitAlbumISRCs(BaseAction):
         # Set up parameters for the helper
         client_string = 'Picard_Plugin_{0}-v{1}'.format(PLUGIN_NAME, PLUGIN_VERSION).replace(' ', '_')
         handler = self.submission_handler
-        path_list = ['recording']
+        path = '/recording' if NEW_MBAPIHelper else ['recording']
         params = {"client": client_string}
 
-        return helper.post(path_list, data, handler, priority=True,
+        return helper.post(path, data, handler, priority=True,
                          queryargs=params, parse_response_type="xml",
                          request_mimetype="application/xml; charset=utf-8")
 
