@@ -23,8 +23,9 @@ variables provided by this plugin.
 
 * **_artists_album_primary_id** - The ID of the primary / first album artist listed
 * **_artists_album_primary_std** - The primary / first album artist listed (standardized)
-* **_artists_album_primary_cred** - The primary / first album artist listed (as credited)
 * **_artists_album_primary_sort** - The primary / first album artist listed (sort name)
+* **_artists_album_primary_cred** - The primary / first album artist listed (as credited)
+* **_artists_album_primary_cred_sort** - The primary / first album artist listed (sort name as credited)
 * **_artists_album_primary_legal** - The primary / first album artist listed (legal name)
 * **_artists_album_primary_sort_legal** - The primary / first album artist listed (sort legal name)
 * **_artists_album_primary_tags** - The primary / first album artist tags (limited to 'Maximum number of genres' setting in Picard configuration), as a multi-value
@@ -32,18 +33,22 @@ variables provided by this plugin.
 * **_artists_album_additional_std** - All album artists listed (standardized) except for the primary / first artist, separated by strings provided from the release entry
 * **_artists_album_additional_cred** - All album artists listed (as credited) except for the primary / first artist, separated by strings provided from the release entry
 * **_artists_album_additional_sort** - All album artists listed (sort names) except for the primary / first artist, separated by strings provided from the release entry
+* **_artists_album_additional_cred_sort** - All album artists listed (sort names as credited) except for the primary / first artist, separated by strings provided from the release entry
 * **_artists_album_additional_legal** - All album artists listed (legal names) except for the primary / first artist, separated by strings provided from the release entry
 * **_artists_album_additional_std_multi** - All album artists listed (standardized) except for the primary / first artist, as a multi-value
 * **_artists_album_additional_cred_multi** - All album artists listed (as credited) except for the primary / first artist, as a multi-value
 * **_artists_album_additional_sort_multi** - All album artists listed (sort names) except for the primary / first artist, as a multi-value
+* **_artists_album_additional_cred_sort_multi** - All album artists listed (sort names as credited) except for the primary / first artist, as a multi-value
 * **_artists_album_additional_legal_multi** - All album artists listed (legal names) except for the primary / first artist, as a multi-value
 * **_artists_album_all_std** - All album artists listed (standardized), separated by strings provided from the release entry
-* **_artists_album_all_cred** - All album artists listed (as credited), separated by strings provided from the release entry
 * **_artists_album_all_sort** - All album artists listed (sort names), separated by strings provided from the release entry
+* **_artists_album_all_cred** - All album artists listed (as credited), separated by strings provided from the release entry
+* **_artists_album_all_cred_sort** - All album artists listed (sort names as credited), separated by strings provided from the release entry
 * **_artists_album_all_legal** - All album artists listed (legal names), separated by strings provided from the release entry
 * **_artists_album_all_std_multi** - All album artists listed (standardized), as a multi-value
-* **_artists_album_all_cred_multi** - All album artists listed (as credited), as a multi-value
 * **_artists_album_all_sort_multi** - All album artists listed (sort names), as a multi-value
+* **_artists_album_all_cred_multi** - All album artists listed (as credited), as a multi-value
+* **_artists_album_all_cred_sort_multi** - All album artists listed (sort names as credited), as a multi-value
 * **_artists_album_all_legal_multi** - All album artists listed (legal names), as a multi-value
 * **_artists_album_all_sort_primary** - The primary / first album artist listed (sort name) followed by all additional album artists (standardized), separated by strings provided from the release entry
 * **_artists_album_all_types** - All album artist types, as a multi-value
@@ -54,26 +59,31 @@ variables provided by this plugin.
 
 * **_artists_track_primary_id** - The ID of the primary / first track artist listed
 * **_artists_track_primary_std** - The primary / first track artist listed (standardized)
-* **_artists_track_primary_cred** - The primary / first track artist listed (as credited)
 * **_artists_track_primary_sort** - The primary / first track artist listed (sort name)
+* **_artists_track_primary_cred** - The primary / first track artist listed (as credited)
+* **_artists_track_primary_cred_sort** - The primary / first track artist listed (sort as credited name)
 * **_artists_track_primary_legal** - The primary / first track artist listed (legal name)
 * **_artists_track_primary_sort_legal** - The primary / first track artist listed (sort legal name)
 * **_artists_track_additional_id** - The IDs of all track artists listed except for the primary / first artist, as a multi-value
 * **_artists_track_additional_std** - All track artists listed (standardized) except for the primary / first artist, separated by strings provided from the track entry
 * **_artists_track_additional_cred** - All track artists listed (as credited) except for the primary / first artist, separated by strings provided from the track entry
 * **_artists_track_additional_sort** - All track artists listed (sort names) except for the primary / first artist, separated by strings provided from the track entry
+* **_artists_track_additional_cred_sort** - All track artists listed (sort names as credited) except for the primary / first artist, separated by strings provided from the track entry
 * **_artists_track_additional_legal** - All track artists listed (legal names) except for the primary / first artist, separated by strings provided from the track entry
 * **_artists_track_additional_std_multi** - All track artists listed (standardized) except for the primary / first artist, as a multi-value
-* **_artists_track_additional_cred_multi** - All track artists listed (as credited) except for the primary / first artist, as a multi-value
 * **_artists_track_additional_sort_multi** - All track artists listed (sort names) except for the primary / first artist, as a multi-value
+* **_artists_track_additional_cred_multi** - All track artists listed (as credited) except for the primary / first artist, as a multi-value
+* **_artists_track_additional_cred_sort_multi** - All track artists listed (sort names as credited) except for the primary / first artist, as a multi-value
 * **_artists_track_additional_legal_multi** - All track artists listed (legal names) except for the primary / first artist, as a multi-value
 * **_artists_track_all_std** - All track artists listed (standardized), separated by strings provided from the track entry
-* **_artists_track_all_cred** - All track artists listed (as credited), separated by strings provided from the track entry
 * **_artists_track_all_sort** - All track artists listed (sort names), separated by strings provided from the track entry
+* **_artists_track_all_cred** - All track artists listed (as credited), separated by strings provided from the track entry
+* **_artists_track_all_cred_sort** - All track artists listed (sort names as credited), separated by strings provided from the track entry
 * **_artists_track_all_legal** - All track artists listed (legal names), separated by strings provided from the track entry
 * **_artists_track_all_std_multi** - All track artists listed (standardized), as a multi-value
-* **_artists_track_all_cred_multi** - All track artists listed (as credited), as a multi-value
 * **_artists_track_all_sort_multi** - All track artists listed (sort names), as a multi-value
+* **_artists_track_all_cred_multi** - All track artists listed (as credited), as a multi-value
+* **_artists_track_all_cred_sort_multi** - All track artists listed (sort names as credited), as a multi-value
 * **_artists_track_all_legal_multi** - All track artists listed (legal names), as a multi-value
 * **_artists_track_all_sort_primary** - The primary / first track artist listed (sort name) followed by all additional track artists (standardized), separated by strings provided from the track entry
 * **_artists_track_all_types** - All track artist types, as a multi-value
