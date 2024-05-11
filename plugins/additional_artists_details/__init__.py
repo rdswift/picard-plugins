@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Additional Artists Details
 """
-# Copyright (C) 2023 Bob Swift (rdswift)
+# Copyright (C) 2023-2024 Bob Swift (rdswift)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -58,8 +58,8 @@ artist processing, which can significantly increase the processing speed if you 
 Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/additional_artists_details/docs/README.md">user
 guide</a> on GitHub for more information.
 '''
-PLUGIN_VERSION = '0.3'
-PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.8']
+PLUGIN_VERSION = '0.4'
+PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.8', '2.11']
 PLUGIN_LICENSE = 'GPL-2.0-or-later'
 PLUGIN_LICENSE_URL = 'https://www.gnu.org/licenses/gpl-2.0.html'
 
@@ -86,7 +86,8 @@ ARTIST = 'artist'
 ARTIST_REQUESTS = 'artist_requests'
 AREA = 'area'
 AREA_REQUESTS = 'area_requests'
-ISO_CODES = 'iso-3166-1-codes'
+ISO_CODES_1 = 'iso-3166-1-codes'
+ISO_CODES_2 = 'iso-3166-2-codes'
 OPT_AREA_DETAILS = 'aad_area_details'
 OPT_PROCESS_TRACKS = 'aad_process_tracks'
 TRACKS = 'tracks'
@@ -337,7 +338,7 @@ class ArtistDetailsPlugin:
             self._artist_submission_handler,
             artist=artist_id,
             album=album,
-            )
+        )
         return helper.get_artist_by_id(artist_id, handler)
 
     def _artist_submission_handler(self, document, _reply, error, artist=None, album=None):
@@ -381,7 +382,7 @@ class ArtistDetailsPlugin:
             self._area_submission_handler,
             area=area_id,
             album=album,
-            )
+        )
         return helper.get_area_by_id(area_id, handler)
 
     def _area_submission_handler(self, document, _reply, error, area=None, album=None):
@@ -464,10 +465,12 @@ class ArtistDetailsPlugin:
         area_name = area_info['name'] if 'name' in area_info else 'Unknown Name'
         area_type = area_info['type-id'] if 'type-id' in area_info else ''
         area_type_text = area_info['type'] if 'type' in area_info else 'Unknown Area Type'
+        country = ''
         if area_type == AREA_TYPE_COUNTRY:
-            country = area_info[ISO_CODES][0] if ISO_CODES in area_info and area_info[ISO_CODES] else ''
-        else:
-            country = ''
+            if ISO_CODES_1 in area_info and area_info[ISO_CODES_1]:
+                country = area_info[ISO_CODES_1][0]
+            elif ISO_CODES_2 in area_info and area_info[ISO_CODES_2]:
+                country = area_info[ISO_CODES_2][0][:2]
         return (area_id, area_name, country, area_type, area_type_text)
 
     @staticmethod
