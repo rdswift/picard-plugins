@@ -58,7 +58,7 @@ artist processing, which can significantly increase the processing speed if you 
 Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/additional_artists_details/docs/README.md">user
 guide</a> on GitHub for more information.
 '''
-PLUGIN_VERSION = '0.4'
+PLUGIN_VERSION = '0.5'
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.8', '2.11']
 PLUGIN_LICENSE = 'GPL-2.0-or-later'
 PLUGIN_LICENSE_URL = 'https://www.gnu.org/licenses/gpl-2.0.html'
@@ -444,6 +444,11 @@ class ArtistDetailsPlugin:
             else:
                 if _id not in self.result_cache[AREA] and _id not in self.result_cache[AREA_REQUESTS]:
                     self._get_area_info(_id, album)
+        elif 'direction' in area_relation and area_relation['direction'] == 'forward' and _type == AREA_TYPE_COUNTRY:
+            if _id not in self.result_cache[AREA]:
+                self._area_logger(_id, f"{name} ({country})", type_text)
+                self.result_cache[AREA][_id] = Area('', name, country, _type, type_text)
+                self.result_cache[AREA_REQUESTS].add(_id)
         else:
             self._area_logger(_id, name, type_text)
             self.result_cache[AREA_REQUESTS].add(_id)
