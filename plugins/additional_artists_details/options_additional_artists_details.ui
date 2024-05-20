@@ -98,7 +98,7 @@
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option determines whether or not County and Municipality information is included in the artist location variables created. Regardless of this setting, this information will be included if a County or Municipality is the area specified for an artist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option determines whether or not County, Municipality and Subdivision information is included in the artist location variables created. Regardless of these settings, this information will be included if a County, Municipality or Subdivision is the area specified for an artist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -106,11 +106,35 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="cb_area_details">
-            <property name="text">
-             <string>Include area details</string>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <property name="spacing">
+             <number>0</number>
             </property>
-           </widget>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="cb_area_county">
+              <property name="text">
+               <string>Include location county</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cb_area_municipality">
+              <property name="text">
+               <string>Include location municipality</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cb_area_subdivision">
+              <property name="text">
+               <string>Include location subdivision</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

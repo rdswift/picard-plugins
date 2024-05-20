@@ -23,6 +23,7 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 
+
 from collections import namedtuple
 from functools import partial
 
@@ -39,12 +40,11 @@ from picard.plugin import PluginPriority
 from picard.plugins.additional_artists_details.ui_options_additional_artists_details import (
     Ui_AdditionalArtistsDetailsOptionsPage,
 )
-from picard.webservice.api_helpers import MBAPIHelper
-
 from picard.ui.options import (
     OptionsPage,
     register_options_page,
 )
+from picard.webservice.api_helpers import MBAPIHelper
 
 
 PLUGIN_NAME = 'Additional Artists Details'
@@ -58,7 +58,7 @@ artist processing, which can significantly increase the processing speed if you 
 Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/additional_artists_details/docs/README.md">user
 guide</a> on GitHub for more information.
 '''
-PLUGIN_VERSION = '0.5'
+PLUGIN_VERSION = '0.6'
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.8', '2.11']
 PLUGIN_LICENSE = 'GPL-2.0-or-later'
 PLUGIN_LICENSE_URL = 'https://www.gnu.org/licenses/gpl-2.0.html'
@@ -76,9 +76,9 @@ RELATIONSHIP_TYPE_PART_OF = 'de7cc874-8b1b-3a05-8272-f3834c968fb7'
 AREA_TYPE_COUNTRY = '06dd0ae4-8c74-30bb-b43d-95dcedf961de'
 AREA_TYPE_COUNTY = 'bcecec27-8bdb-3e00-8254-d948dda502fa'
 AREA_TYPE_MUNICIPALITY = '17246454-5ac4-36a1-b81a-4753eb2dab20'
+AREA_TYPE_SUBDIVISION = 'fd3d44c5-80a1-3842-9745-2c4972d35afa'
 
-# Area types to exclude from the location string
-EXCLUDE_AREA_TYPES = {AREA_TYPE_MUNICIPALITY, AREA_TYPE_COUNTY}
+CONDITIONAL_LOCATIONS = {AREA_TYPE_COUNTY, AREA_TYPE_MUNICIPALITY, AREA_TYPE_SUBDIVISION}
 
 # Standard text for arguments
 ALBUM_ARTISTS = 'album_artists'
@@ -88,7 +88,9 @@ AREA = 'area'
 AREA_REQUESTS = 'area_requests'
 ISO_CODES_1 = 'iso-3166-1-codes'
 ISO_CODES_2 = 'iso-3166-2-codes'
-OPT_AREA_DETAILS = 'aad_area_details'
+OPT_AREA_COUNTY = 'aad_area_county'
+OPT_AREA_MUNICIPALITY = 'aad_area_municipality'
+OPT_AREA_SUBDIVISION = 'aad_area_subdivision'
 OPT_PROCESS_TRACKS = 'aad_process_tracks'
 TRACKS = 'tracks'
 
@@ -153,6 +155,10 @@ class CustomHelper(MBAPIHelper):
 class ArtistDetailsPlugin:
     """Plugin to retrieve artist details, including area and country information.
     """
+
+    # Area types to exclude from the location string
+    EXCLUDE_AREA_TYPES = {AREA_TYPE_MUNICIPALITY, AREA_TYPE_COUNTY, AREA_TYPE_SUBDIVISION}
+
     result_cache = {
         ARTIST: {},
         ARTIST_REQUESTS: set(),
@@ -161,6 +167,21 @@ class ArtistDetailsPlugin:
     }
     album_processing_count = {}
     albums = {}
+    album_area_requests = {}
+
+    def _add_album_area_request(self, album_id, area_id):
+        if album_id not in self.album_area_requests:
+            self.album_area_requests[album_id] = set()
+        self.album_area_requests[album_id].add(area_id)
+
+    def _remove_album_area_request(self, album_id, area_id):
+        if album_id in self.album_area_requests:
+            self.album_area_requests[album_id].discard(area_id)
+
+    def _get_album_area_request_count(self, album_id):
+        if album_id not in self.album_area_requests:
+            return 0
+        return len(self.album_area_requests[album_id])
 
     def _make_empty_target(self, album_id):
         """Create an empty album target node if it doesn't exist.
@@ -213,7 +234,9 @@ class ArtistDetailsPlugin:
             self.album_processing_count[album.id] = 1
         self.album_processing_count[album.id] -= 1
         album._requests -= 1
-        album._finalize_loading(None)   # pylint: disable=protected-access
+        if self._get_album_area_request_count(album.id) < 1:
+            self._save_artist_metadata(album.id)
+            album._finalize_loading(None)   # pylint: disable=protected-access
 
     def remove_album(self, album):
         """Remove the album from the albums processing dictionary.
@@ -293,6 +316,8 @@ class ArtistDetailsPlugin:
         """
         if album_id in self.album_processing_count and self.album_processing_count[album_id]:
             return
+        if self._get_album_area_request_count(album_id) > 0:
+            return
         if album_id not in self.albums or not self.albums[album_id][TRACKS]:
             log.error(*log_helper("No metadata targets found for album '%s'", album_id))
             return
@@ -365,7 +390,6 @@ class ArtistDetailsPlugin:
             self.result_cache[ARTIST][artist] = artist_info
         finally:
             self._album_remove_request(album)
-            self._save_artist_metadata(album.id)
 
     def _get_area_info(self, area_id, album):
         """Gets the area information from the MusicBrainz website.
@@ -376,6 +400,7 @@ class ArtistDetailsPlugin:
         """
         self.result_cache[AREA_REQUESTS].add(area_id)
         self._album_add_request(album)
+        self._add_album_area_request(album.id, area_id)
         log.debug(*log_helper('Retrieving area ID %s from MusicBrainz.', area_id))
         helper = CustomHelper(album.tagger.webservice)
         handler = partial(
@@ -400,8 +425,8 @@ class ArtistDetailsPlugin:
                 for rel in document['relations']:
                     self._parse_area_relation(_id, rel, album, name, _type, type_text)
         finally:
+            self._remove_album_area_request(album.id, area)
             self._album_remove_request(album)
-            self._save_artist_metadata(album.id)
 
     @staticmethod
     def _area_logger(area_id, area_name, area_type):
@@ -431,24 +456,26 @@ class ArtistDetailsPlugin:
         if not _id:
             return
 
+        def _add_country(_id, name, country, _type, type_text):
+            if _id not in self.result_cache[AREA]:
+                self._area_logger(_id, f"{name} ({country})", type_text)
+                self.result_cache[AREA][_id] = Area('', name, country, _type, type_text)
+                self.result_cache[AREA_REQUESTS].add(_id)
+
         if 'direction' in area_relation and area_relation['direction'] == 'backward':
             if area_id not in self.result_cache[AREA]:
                 self._area_logger(area_id, area_name, area_type_text)
                 self.result_cache[AREA][area_id] = Area(_id, area_name, '', area_type, type_text)
                 self.result_cache[AREA_REQUESTS].add(area_id)
             if _type == AREA_TYPE_COUNTRY:
-                if _id not in self.result_cache[AREA]:
-                    self._area_logger(_id, f"{name} ({country})", type_text)
-                    self.result_cache[AREA][_id] = Area('', name, country, _type, type_text)
-                    self.result_cache[AREA_REQUESTS].add(_id)
+                _add_country(_id, name, country, _type, type_text)
             else:
                 if _id not in self.result_cache[AREA] and _id not in self.result_cache[AREA_REQUESTS]:
                     self._get_area_info(_id, album)
+
         elif 'direction' in area_relation and area_relation['direction'] == 'forward' and _type == AREA_TYPE_COUNTRY:
-            if _id not in self.result_cache[AREA]:
-                self._area_logger(_id, f"{name} ({country})", type_text)
-                self.result_cache[AREA][_id] = Area('', name, country, _type, type_text)
-                self.result_cache[AREA_REQUESTS].add(_id)
+            _add_country(_id, name, country, _type, type_text)
+
         else:
             self._area_logger(_id, name, type_text)
             self.result_cache[AREA_REQUESTS].add(_id)
@@ -499,6 +526,7 @@ class ArtistDetailsPlugin:
         Returns:
             tuple: The two-character country code and full location description for the area.
         """
+        # pylint: disable=too-many-boolean-expressions
         country = ''
         location = []
         i = 7   # Counter to avoid potential runaway processing
@@ -507,8 +535,15 @@ class ArtistDetailsPlugin:
             area = self.result_cache[AREA][area_id] if area_id in self.result_cache[AREA] else Area('', '', '', '', '')
             country = area.country
             area_id = area.parent
-            if not location or config.setting[OPT_AREA_DETAILS] or area.type not in EXCLUDE_AREA_TYPES:
+            if not location or area.type not in CONDITIONAL_LOCATIONS:
                 location.append(area.name)
+            else:
+                if (
+                    (area.type == AREA_TYPE_COUNTY and config.setting[OPT_AREA_COUNTY]) or
+                    (area.type == AREA_TYPE_MUNICIPALITY and config.setting[OPT_AREA_MUNICIPALITY]) or
+                    (area.type == AREA_TYPE_SUBDIVISION and config.setting[OPT_AREA_SUBDIVISION])
+                ):
+                    location.append(area.name)
         return country, ', '.join(location)
 
 
@@ -522,7 +557,9 @@ class AdditionalArtistsDetailsOptionsPage(OptionsPage):
 
     options = [
         config.BoolOption('setting', OPT_PROCESS_TRACKS, False),
-        config.BoolOption('setting', OPT_AREA_DETAILS, False),
+        config.BoolOption('setting', OPT_AREA_COUNTY, True),
+        config.BoolOption('setting', OPT_AREA_MUNICIPALITY, True),
+        config.BoolOption('setting', OPT_AREA_SUBDIVISION, True),
     ]
 
     def __init__(self, parent=None):
@@ -537,14 +574,18 @@ class AdditionalArtistsDetailsOptionsPage(OptionsPage):
         """Load the option settings.
         """
         self.ui.cb_process_tracks.setChecked(config.setting[OPT_PROCESS_TRACKS])
-        self.ui.cb_area_details.setChecked(config.setting[OPT_AREA_DETAILS])
+        self.ui.cb_area_county.setChecked(config.setting[OPT_AREA_COUNTY])
+        self.ui.cb_area_municipality.setChecked(config.setting[OPT_AREA_MUNICIPALITY])
+        self.ui.cb_area_subdivision.setChecked(config.setting[OPT_AREA_SUBDIVISION])
 
     def save(self):
         """Save the option settings.
         """
         # self._set_settings(config.setting)
         config.setting[OPT_PROCESS_TRACKS] = self.ui.cb_process_tracks.isChecked()
-        config.setting[OPT_AREA_DETAILS] = self.ui.cb_area_details.isChecked()
+        config.setting[OPT_AREA_COUNTY] = self.ui.cb_area_county.isChecked()
+        config.setting[OPT_AREA_MUNICIPALITY] = self.ui.cb_area_municipality.isChecked()
+        config.setting[OPT_AREA_SUBDIVISION] = self.ui.cb_area_subdivision.isChecked()
 
 
 plugin = ArtistDetailsPlugin()
