@@ -23,7 +23,6 @@
 # pylint: disable=too-many-boolean-expressions
 # pylint: disable=import-error
 
-import re
 
 from picard import log
 from picard.metadata import register_track_metadata_processor
@@ -35,14 +34,12 @@ PLUGIN_DESCRIPTION = '''
 This plugin combines all performer tags into a multi-value variable `%_performers%`.
 '''
 
-PLUGIN_VERSION = "0.1"
+PLUGIN_VERSION = "0.2"
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
 
 PLUGIN_USER_GUIDE_URL = "https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/combine_performer_tags/docs/README.md"
-
-performers_split = re.compile(r", | and ").split
 
 
 def metadata_error(album_id, metadata_element, track_number):
