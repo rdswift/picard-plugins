@@ -32,18 +32,32 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>543</width>
-        <height>784</height>
+        <y>-415</y>
+        <width>530</width>
+        <height>1199</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QGroupBox" name="gb_description">
-         <property name="title">
+        <widget class="QLabel" name="label_20">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
           <string>Combine Performer Tags</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_description">
          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLabel" name="format_description">
             <property name="sizePolicy">
@@ -53,7 +67,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These settings will determine how the &lt;span style=&quot; font-weight:600;&quot;&gt;Combine Performer Tags&lt;/span&gt; plugin operates.&lt;/p&gt;&lt;p&gt;Please visit the repository on GitHub for &lt;a href=&quot;https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/combine_performer_tags/docs/README.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;additional information&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These settings will determine how the &lt;span style=&quot; font-weight:600;&quot;&gt;Combine Performer Tags&lt;/span&gt; plugin operates.  Note that there is an example output displayed at the bottom of this settings window, and the example is updated whenever a setting is changed.&lt;/p&gt;&lt;p&gt;Please visit the repository on GitHub for &lt;a href=&quot;https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/combine_performer_tags/docs/README.md&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;additional information&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -64,15 +78,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="gb_standard_or_credited">
-         <property name="title">
+        <widget class="QLabel" name="label_21">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
           <string>Standard or Credited Information</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_standard_or_credited">
          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These options determine whether the information is displayed as &lt;span style=&quot; font-weight:600;&quot;&gt;credited&lt;/span&gt; or &lt;span style=&quot; font-weight:600;&quot;&gt;standard&lt;/span&gt;. If &lt;span style=&quot; font-weight:600;&quot;&gt;credited&lt;/span&gt; is selected for one of the information types and there is no credited value available, the standard information will be used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These options determine whether the information is displayed as &lt;span style=&quot; font-weight:600;&quot;&gt;credited&lt;/span&gt; or &lt;span style=&quot; font-weight:600;&quot;&gt;standard&lt;/span&gt;. If credited is selected for one of the information types and there is no credited value available, the standard information will be used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -114,11 +141,24 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="gb_performance_attributes">
-         <property name="title">
+        <widget class="QLabel" name="label_22">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
           <string>Include Performance Attributes</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_performance_attributes">
          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
@@ -142,13 +182,6 @@
               <property name="topMargin">
                <number>0</number>
               </property>
-              <item row="2" column="1">
-               <widget class="QCheckBox" name="cb_solo_instruments">
-                <property name="text">
-                 <string>Instruments</string>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="2">
                <widget class="QCheckBox" name="cb_guest_vocals">
                 <property name="text">
@@ -156,17 +189,10 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_6">
+              <item row="2" column="1">
+               <widget class="QCheckBox" name="cb_solo_instruments">
                 <property name="text">
-                 <string>Additional:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QCheckBox" name="cb_solo_vocals">
-                <property name="text">
-                 <string>Vocals</string>
+                 <string>Instruments</string>
                 </property>
                </widget>
               </item>
@@ -177,10 +203,16 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_8">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
-                 <string>Solo:</string>
+                 <string>Guest:</string>
                 </property>
                </widget>
               </item>
@@ -191,10 +223,10 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_7">
+              <item row="2" column="2">
+               <widget class="QCheckBox" name="cb_solo_vocals">
                 <property name="text">
-                 <string>Guest:</string>
+                 <string>Vocals</string>
                 </property>
                </widget>
               </item>
@@ -202,6 +234,52 @@
                <widget class="QCheckBox" name="cb_additional_vocals">
                 <property name="text">
                  <string>Vocals</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Solo:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Additional:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QCheckBox" name="cb_vocal_types">
+                <property name="text">
+                 <string>Vocals</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_13">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Vocal Types:</string>
                 </property>
                </widget>
               </item>
@@ -226,17 +304,855 @@
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QLabel" name="label_23">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
+         <property name="text">
+          <string>Grouping</string>
          </property>
-        </spacer>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frame">
+         <property name="font">
+          <font>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This determines how the items in the variable are grouped.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="label_15">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Group by:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rb_group_artist">
+              <property name="text">
+               <string>Artist</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rb_group_instrument">
+              <property name="text">
+               <string>Instrument / Vocal</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_24">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Keyword Sections Assignment</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_word_groups">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="format_description_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These settings determine the format for the items in the variable. The format is divided into six parts: the artist; the instrument or vocal; and four user selectable sections for the extra information. This is set out as:&lt;/p&gt;&lt;p&gt;With Artist grouping:&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Artist: &lt;span style=&quot; font-weight:600;&quot;&gt;[Section 1]&lt;/span&gt;Instrument/Vocal&lt;span style=&quot; font-weight:600;&quot;&gt;[Section 2][Section 3][Section 4]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With Instrument/Vocal grouping:&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[Section 1]&lt;/span&gt;Instrument/Vocal&lt;span style=&quot; font-weight:600;&quot;&gt;[Section 2][Section 3]&lt;/span&gt;: Artist&lt;span style=&quot; font-weight:600;&quot;&gt;[Section 4]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;You can select the section in which each of the extra information words appear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>1</number>
+            </property>
+            <item row="0" column="1">
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="additional_rb_1">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="additional_rb_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="additional_rb_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="additional_rb_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>4</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QWidget" name="widget_2" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="guest_rb_1">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="guest_rb_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="guest_rb_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="guest_rb_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>4</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QWidget" name="widget_3" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="solo_rb_1">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="solo_rb_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="solo_rb_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="solo_rb_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>4</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="5">
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Additional:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_17">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Guest:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_18">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Solo:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Vocal Types:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QWidget" name="widget_4" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="vocals_rb_1">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="vocals_rb_2">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="vocals_rb_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="vocals_rb_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>4</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_25">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Section Display Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_group_settings">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For each of the sections you can select the starting character(s), the character(s) separating entries, and the ending character(s). Note that leading or trailing spaces must be included in the settings and will not be automatically added. If no separator characters are entered, the items within a section will be automatically separated by a single space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <property name="verticalSpacing">
+             <number>1</number>
+            </property>
+            <item row="4" column="2" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_2_sep_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_2_start_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>, </string>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="3" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_4_end_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>)</string>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_4_start_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string> (</string>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="6" column="0" alignment="Qt::AlignLeft">
+             <widget class="QLabel" name="label_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Section 4</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3" alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_12">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>End Char(s)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" alignment="Qt::AlignLeft">
+             <widget class="QLabel" name="label_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Section 1</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" alignment="Qt::AlignLeft">
+             <widget class="QLabel" name="label_3">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Section 2</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_3_sep_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="2" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_4_sep_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_1_start_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" alignment="Qt::AlignLeft">
+             <widget class="QLabel" name="label_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Section 3</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2" alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_11">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Sep Char(s)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_3_start_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string> (</string>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_1_end_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_2_end_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="3" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_3_end_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>)</string>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2" alignment="Qt::AlignHCenter">
+             <widget class="QLineEdit" name="format_group_1_sep_char">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>(blank)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1" alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_10">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Start Char(s)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_26">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Example Output</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="gb_examples">
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="example_items">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -245,7 +1161,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>scrollArea</tabstop>
   <tabstop>cb_credited_artists</tabstop>
   <tabstop>cb_credited_instruments</tabstop>
   <tabstop>cb_credited_vocals</tabstop>

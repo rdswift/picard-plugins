@@ -94,7 +94,7 @@ Please see the [user guide](https://github.com/rdswift/picard-plugins/blob/2.0_R
 
 ## Combine Performer Tags \[[Download](https://github.com/rdswift/picard-plugins/raw/2.0_RDS_Plugins/plugins/combine_performer_tags/combine_performer_tags.zip)\]
 
-This plugin combines all instrument and vocal performer tags into a new multi-value variable `%_performers%` for each track. It requires that the "***Use track relationships***" setting is enabled in **Options** -> **Metadata**. Each item in the variable is the performer's name followed by the instruments and vocals they performed, for example "*Jackson Browne (acoustic guitar, piano, lead vocals)*".
+This plugin combines all instrument and vocal performer tags into a new multi-value variable `%_performers%` for each track. It requires that the "***Use track relationships***" setting is enabled in **Options** -> **Metadata**. Each item in the variable is the performer's name followed by the instruments and vocals they performed, for example "*Jackson Browne: acoustic guitar, piano, lead vocals*".
 
 The plugin makes no additional calls to the MusicBrainz database, and it does not remove any of the `%performer:*%` tags.
 
