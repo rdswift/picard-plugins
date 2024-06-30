@@ -45,8 +45,8 @@ This plugin combines all performer tags into a multi-value variable `%_performer
 The format of the resulting variable items can be customized in the option settings page.
 '''
 
-PLUGIN_VERSION = "0.3"
-PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11']
+PLUGIN_VERSION = "0.4"
+PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11', '2.12']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
 
@@ -102,6 +102,7 @@ class PluginOptions():
 class CombinePerformerTags():
     """Combines performer information from the metadata to produce a multi-value variable.
     """
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, source_metadata: dict, options: PluginOptions = None) -> None:
         """Combines performer information from the metadata to produce a multi-value variable.
@@ -396,6 +397,8 @@ class CombinePerformerTagsOptionsPage(OptionsPage):
         self.ui.cb_guest_vocals.clicked.connect(self._update_settings_and_examples)
         self.ui.cb_solo_vocals.clicked.connect(self._update_settings_and_examples)
 
+        self.ui.cb_vocal_types.clicked.connect(self._update_settings_and_examples)
+
         self.ui.rb_group_artist.clicked.connect(self._update_settings_and_examples)
         self.ui.rb_group_instrument.clicked.connect(self._update_settings_and_examples)
 
@@ -449,6 +452,7 @@ class CombinePerformerTagsOptionsPage(OptionsPage):
         self.ui.cb_additional_vocals.setChecked(config.setting[self.keys.OPT_VOCAL_ATTR_ADDITIONAL])
         self.ui.cb_guest_vocals.setChecked(config.setting[self.keys.OPT_VOCAL_ATTR_GUEST])
         self.ui.cb_solo_vocals.setChecked(config.setting[self.keys.OPT_VOCAL_ATTR_SOLO])
+        self.ui.cb_vocal_types.setChecked(config.setting[self.keys.OPT_VOCAL_ATTR_TYPES])
 
         if config.setting[self.keys.OPT_TAG_GROUP_BY_ARTIST]:
             self.ui.rb_group_artist.setChecked(True)
@@ -527,6 +531,7 @@ class CombinePerformerTagsOptionsPage(OptionsPage):
         config.setting[self.keys.OPT_VOCAL_ATTR_ADDITIONAL] = self.ui.cb_additional_vocals.isChecked()
         config.setting[self.keys.OPT_VOCAL_ATTR_GUEST] = self.ui.cb_guest_vocals.isChecked()
         config.setting[self.keys.OPT_VOCAL_ATTR_SOLO] = self.ui.cb_solo_vocals.isChecked()
+        config.setting[self.keys.OPT_VOCAL_ATTR_TYPES] = self.ui.cb_vocal_types.isChecked()
         config.setting[self.keys.OPT_TAG_GROUP_BY_ARTIST] = self.ui.rb_group_artist.isChecked()
 
         # Settings for word group 1
@@ -567,6 +572,7 @@ class CombinePerformerTagsOptionsPage(OptionsPage):
         self.settings.OPT_VOCAL_ATTR_ADDITIONAL = self.ui.cb_additional_vocals.isChecked()
         self.settings.OPT_VOCAL_ATTR_GUEST = self.ui.cb_guest_vocals.isChecked()
         self.settings.OPT_VOCAL_ATTR_SOLO = self.ui.cb_solo_vocals.isChecked()
+        self.settings.OPT_VOCAL_ATTR_TYPES = self.ui.cb_vocal_types.isChecked()
         self.settings.OPT_TAG_GROUP_BY_ARTIST = self.ui.rb_group_artist.isChecked()
 
         # Settings for word group 1
@@ -610,6 +616,8 @@ class CombinePerformerTagsOptionsPage(OptionsPage):
 class ExampleMetadata():
     """Metadata to use for the examples display.
     """
+    # pylint: disable=too-few-public-methods
+
     RELS = [
         {
             'artist': {
