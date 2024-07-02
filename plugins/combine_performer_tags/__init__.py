@@ -45,7 +45,7 @@ This plugin combines all performer tags into a multi-value variable `%_performer
 The format of the resulting variable items can be customized in the option settings page.
 '''
 
-PLUGIN_VERSION = "0.4"
+PLUGIN_VERSION = "0.5"
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11', '2.12']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -173,12 +173,16 @@ class CombinePerformerTags():
 
     def _parse_metadata(self, relation: dict) -> tuple:
         # pylint: disable=too-many-boolean-expressions
+        # pylint: disable=too-many-branches
         groups = {1: [], 2: [], 3: [], 4: []}
 
+        group = relation['type'][0]
+        attributes = list(relation['attributes'])   # Make copy to update if empty
         performer = relation['target-credit'] if self.settings.OPT_CREDITED_ARTIST and relation['target-credit'] else relation['artist']['name']
         performer_sort = relation['artist']['sort-name']
-        instrument = relation['attributes'][0]
-        group = relation['type'][0]
+        if not attributes or attributes[0] in {'additional', 'guest', 'solo'}:
+            attributes.insert(0, 'vocals' if group == 'v' else 'instruments')
+        instrument = attributes[0]
 
         # Get as credited name for the instrument or vocal
         if (
@@ -192,7 +196,7 @@ class CombinePerformerTags():
             instrument = relation['attribute-credits'][instrument]
 
         # Add any additional attributes such as 'guest' or 'solo'
-        for attr in relation['attributes'][1:]:
+        for attr in attributes[1:]:
             if (
                 attr == 'additional' and (
                     (group == 'i' and not self.settings.OPT_INSTRUMENT_ATTR_ADDITIONAL)
@@ -276,7 +280,6 @@ class CombinePerformerTags():
             if (
                 'artist' not in relation or not relation['artist']
                 or 'type' not in relation or relation['type'] not in ('instrument', 'vocal')
-                or 'attributes' not in relation or not relation['attributes']
             ):
                 continue
 
@@ -302,10 +305,9 @@ class CombinePerformerTags():
         return performers_tag
 
 
-def combine_performer_tags(album, album_metadata, track_metadata, release_metadata) -> None:
+def combine_performer_tags(_album, album_metadata, track_metadata, release_metadata) -> None:
     """Combines performer information into a multi-value variable for use in scripting.
     """
-    # pylint: disable=unused-argument
 
     def metadata_error(album_id: str, metadata_element: str, track_number: str) -> None:
         log.error(f"{PLUGIN_NAME}: {album_id}: Missing '{metadata_element}' in track {track_number} metadata.")
