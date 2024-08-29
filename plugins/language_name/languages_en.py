@@ -303,6 +303,7 @@ LANGUAGE_LIST = {
     'por': "Portuguese",
     'pro': "Provençal, Old (to 1500)",
     'pus': "Pushto",
+    'qaa': "Artificial",
     'que': "Quechua",
     'raj': "Rajasthani",
     'rap': "Rapanui",

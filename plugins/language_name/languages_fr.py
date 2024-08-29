@@ -301,6 +301,7 @@ LANGUAGE_LIST = {
     'por': "portugais",
     'pro': "provençal ancien (jusqu'à 1500)",
     'pus': "pachto",
+    'qaa': "Artificiel",
     'que': "quechua",
     'raj': "rajasthani",
     'rap': "rapanui",

@@ -218,6 +218,7 @@ LANGUAGE_LIST = {
     'por': "Portugiesisch",
     'pro': "Altprovençalisch",
     'pus': "Paschtunisch",
+    'qaa': "Künstliche",
     'que': "Quechua",
     'rap': "Rapanui",
     'rar': "Rarotonganisch",

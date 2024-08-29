@@ -209,6 +209,7 @@ LANGUAGE_LIST = {
     'por': "portugués",
     'pro': "provenzal antiguo",
     'pus': "pastú",
+    'qaa': "Artificial",
     'que': "quechua",
     'raj': "rayastaní",
     'roh': "retorrománico",

@@ -303,6 +303,7 @@ LANGUAGE_LIST = {
     'por': "Portugees",
     'pro': "Oudprovençaals (tot 1500) / Oud-occitaans (tot 1500)",
     'pus': "Pasjtoe",
+    'qaa': "Kunstmatig",
     'que': "Quechua",
     'raj': "Rajasthani",
     'rap': "Rapa Nui",

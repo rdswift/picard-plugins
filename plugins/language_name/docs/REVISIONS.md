@@ -2,6 +2,10 @@
 
 ## Revision History
 
+### v0.6 - 2024-08-29 (rdswift)
+
+- Add name for code 'qaa'.
+
 ### v0.4 - 2019-02-11 (rdswift)
 
 - Move override settings to '**Plugins**'->'**Language Name**' in the Picard options settings.
