@@ -204,9 +204,47 @@ $if($eq(%tracknumber%,0),
 $if($and($get_a(_zero_track_title),$eq(%tracknumber%,1),$not($startswith(%title%,$get_a(_zero_track_title)))),
   $set(title,$get_a(_zero_track_title)%title%)
 )
-$if($gt(%tracknumber%,0))
+$if($gt(%tracknumber%,0)
   $set(totaltracks,$if2($get_a(_new_track_count),%totaltracks%))
 )
 ```
 
 This script first stores the original title of track 0 with a separating slash in a persistent `_zero_track_title` variable.  It also stores a new (reduced) total track count in a persistent `_new_track_count` variable if there is a track number 0.  It then updates the title of track 1 to include the `_zero_track_title` variable, first checking to ensure that it hasn't already been updated, and updates the value `%totaltracks%` tag for all track numbers greater than 0 if the variable `_new_track_count` has been set.
+
+### Example 7
+
+When a release is a vinyl with the tracks on each side listed with the side as part of the `_musicbrainz_tracknumber` variable (such as A1, A2, B1, etc.), you might want to include the number of tracks on the side as part of the number (such as A1/3, A2/3, B1/6, etc. where side A contains 3 tracks and side B contains 6 tracks).  To do this, you need to have 2 separate tagging scripts – one to collect the track-per-side count, and the other to apply the value.
+
+**Script 1 - Collect the information**
+
+```
+$if($in($left(%_musicbrainz_tracknumber%,1),0123456789),
+  $noop(Normal numeric track number beginning with a digit)
+  $noop(Do nothing)
+,
+  $noop(Vinyl track number beginning with a letter)
+  $noop(Increment the track count for this disc number and side)
+  $set(_counter,$upper($left(%_musicbrainz_tracknumber%,1))%discnumber%)
+  $if($get_a(%_counter%%tracknumber%),,
+    $noop(Only increment if not already processed)
+    $set_a(%_counter%,$add($if2($get_a(%_counter%),0),1))
+    $set_a(%_counter%%tracknumber%,1)
+  )
+)
+```
+
+**Script 2 - Apply the information**
+
+```
+$if($in($left(%_musicbrainz_tracknumber%,1),0123456789),
+  $noop(Normal numeric track number beginning with a digit)
+  $noop(Do nothing)
+,
+  $noop(Vinyl track number beginning with a letter)
+  $noop(Save the total track count for this disc number and side)
+  $set(_counter,$upper($left(%_musicbrainz_tracknumber%,1))%discnumber%)
+  $set(tracknumber,%_musicbrainz_tracknumber%/$get_a(%_counter%))
+)
+```
+
+This will store the updated vinyl track numbers (such as A1/3, A2/3, B1/6, etc.) to the `tracknumber` tag.  Note that some file formats (such as MP4) do not allow any non-digit (0-9) characters in the `tracknumber` tag.
