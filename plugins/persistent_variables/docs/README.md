@@ -218,7 +218,7 @@ When a release is a vinyl with the tracks on each side listed with the side as p
 **Script 1 - Collect the information**
 
 ```
-$if($in($left(%_musicbrainz_tracknumber%,1),0123456789),
+$if($resarch(%_musicbrainz_tracknumber%,^[0-9]),
   $noop(Normal numeric track number beginning with a digit)
   $noop(Do nothing)
 ,
@@ -236,7 +236,7 @@ $if($in($left(%_musicbrainz_tracknumber%,1),0123456789),
 **Script 2 - Apply the information**
 
 ```
-$if($in($left(%_musicbrainz_tracknumber%,1),0123456789),
+$if($resarch(%_musicbrainz_tracknumber%,^[0-9]),
   $noop(Normal numeric track number beginning with a digit)
   $noop(Do nothing)
 ,
