@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Bob Swift (rdswift)
+# Copyright (C) 2024-2025 Bob Swift (rdswift)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,23 +20,17 @@
 # pylint: disable=import-error
 # pylint: disable=missing-module-docstring
 # pylint: disable=line-too-long
+# pylint: disable=no-name-in-module
 
 from collections import namedtuple
 
 from PyQt5 import QtWidgets
-from picard import (
-    config,
-    log,
-)
-from picard.metadata import register_track_metadata_processor
-from picard.plugins.combine_performer_tags.ui_options_combine_performer_tags import (
-    Ui_CombinePerformerTagsOptionsPage,
-)
-from picard.ui.options import (
-    OptionsPage,
-    register_options_page,
-)
 
+from picard import config, log
+from picard.metadata import register_track_metadata_processor
+from picard.plugins.combine_performer_tags.ui_options_combine_performer_tags import \
+    Ui_CombinePerformerTagsOptionsPage
+from picard.ui.options import OptionsPage, register_options_page
 
 PLUGIN_NAME = 'Combine Performer Tags'
 PLUGIN_AUTHOR = 'Bob Swift'
@@ -45,7 +39,7 @@ This plugin combines all performer tags into a multi-value variable `%_performer
 The format of the resulting variable items can be customized in the option settings page.
 '''
 
-PLUGIN_VERSION = "0.5"
+PLUGIN_VERSION = "0.6"
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11', '2.12']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -180,7 +174,7 @@ class CombinePerformerTags():
         attributes = list(relation['attributes'])   # Make copy to update if empty
         performer = relation['target-credit'] if self.settings.OPT_CREDITED_ARTIST and relation['target-credit'] else relation['artist']['name']
         performer_sort = relation['artist']['sort-name']
-        if not attributes or attributes[0] in {'additional', 'guest', 'solo'}:
+        if not attributes or attributes[-1] in {'additional', 'guest', 'solo'}:
             attributes.insert(0, 'vocals' if group == 'v' else 'instruments')
         instrument = attributes[0]
 
