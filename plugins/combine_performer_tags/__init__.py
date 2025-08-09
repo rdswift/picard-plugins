@@ -39,7 +39,7 @@ This plugin combines all performer tags into a multi-value variable `%_performer
 The format of the resulting variable items can be customized in the option settings page.
 '''
 
-PLUGIN_VERSION = "0.6"
+PLUGIN_VERSION = "0.7"
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11', '2.12']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -171,12 +171,13 @@ class CombinePerformerTags():
         groups = {1: [], 2: [], 3: [], 4: []}
 
         group = relation['type'][0]
-        attributes = list(relation['attributes'])   # Make copy to update if empty
+        attributes = set(x for x in relation['attributes'])   # Make copy to update if empty
         performer = relation['target-credit'] if self.settings.OPT_CREDITED_ARTIST and relation['target-credit'] else relation['artist']['name']
         performer_sort = relation['artist']['sort-name']
-        if not attributes or attributes[-1] in {'additional', 'guest', 'solo'}:
-            attributes.insert(0, 'vocals' if group == 'v' else 'instruments')
-        instrument = attributes[0]
+        if not attributes or not attributes.difference({'additional', 'guest', 'solo'}):
+            attributes.add('vocals' if group == 'v' else 'instruments')
+        instrument = attributes.difference({'additional', 'guest', 'solo'}).pop()
+        attributes = attributes.difference({instrument,})
 
         # Get as credited name for the instrument or vocal
         if (
@@ -190,7 +191,7 @@ class CombinePerformerTags():
             instrument = relation['attribute-credits'][instrument]
 
         # Add any additional attributes such as 'guest' or 'solo'
-        for attr in attributes[1:]:
+        for attr in attributes:
             if (
                 attr == 'additional' and (
                     (group == 'i' and not self.settings.OPT_INSTRUMENT_ATTR_ADDITIONAL)
@@ -224,7 +225,7 @@ class CombinePerformerTags():
                 groups[self.settings.OPT_FORMAT_GROUP_GUEST].append(attr)
             elif attr == 'solo':
                 groups[self.settings.OPT_FORMAT_GROUP_SOLO].append(attr)
-            elif self.settings.OPT_VOCAL_ATTR_TYPES:
+            elif self.settings.OPT_VOCAL_ATTR_TYPES and group == 'v':
                 groups[self.settings.OPT_FORMAT_GROUP_VOCALS].append(attr)
 
         #############################################################
