@@ -28,6 +28,7 @@ from PyQt5 import QtWidgets
 
 from picard import config, log
 from picard.metadata import register_track_metadata_processor
+from picard.plugin import PluginPriority
 from picard.plugins.combine_performer_tags.ui_options_combine_performer_tags import \
     Ui_CombinePerformerTagsOptionsPage
 from picard.ui.options import OptionsPage, register_options_page
@@ -37,9 +38,12 @@ PLUGIN_AUTHOR = 'Bob Swift'
 PLUGIN_DESCRIPTION = '''
 This plugin combines all performer tags into a multi-value variable `%_performers%`.
 The format of the resulting variable items can be customized in the option settings page.
+<br /><br />
+Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/combine_performer_tags/docs/README.md">user
+guide</a> on GitHub for more information.
 '''
 
-PLUGIN_VERSION = "0.7"
+PLUGIN_VERSION = "0.8"
 PLUGIN_API_VERSIONS = ['2.0', '2.1', '2.2', '2.7', '2.9', '2.10', '2.11', '2.12']
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -883,5 +887,5 @@ class ExampleMetadata():
 
 
 # Register the plugin
-register_track_metadata_processor(combine_performer_tags)
+register_track_metadata_processor(combine_performer_tags, priority=PluginPriority.LOW)
 register_options_page(CombinePerformerTagsOptionsPage)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2018 Bob Swift (rdswift)
+# Copyright (C) 2018-2025 Bob Swift (rdswift)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,23 +25,31 @@ has been developed using the 'Standardise Performers' plugin by Sophist
 as the basis for retrieving and processing the performer data for each
 of the tracks.  The original/replacement pairs used can be customized
 in the option settings page.
+<br /><br />
+Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/performer_tag_replace/docs/README.md">user
+guide</a> on GitHub for more information.
 '''
 
-PLUGIN_VERSION = "0.01"
+PLUGIN_VERSION = "0.02"
 PLUGIN_API_VERSIONS = ["2.0"]
 PLUGIN_LICENSE = "GPL-2.0 or later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
 
+PLUGIN_USER_GUIDE_URL = "https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/performer_tag_replace/docs/README.md"
+
 DEV_TESTING = False
 
 import re
+
 from picard import config, log
 from picard.metadata import register_track_metadata_processor
 from picard.plugin import PluginPriority
-from picard.ui.options import register_options_page, OptionsPage
-from picard.plugins.performer_tag_replace.ui_options_performer_tag_replace import Ui_PerformerTagReplaceOptionsPage
+from picard.plugins.performer_tag_replace.ui_options_performer_tag_replace import \
+    Ui_PerformerTagReplaceOptionsPage
+from picard.ui.options import OptionsPage, register_options_page
 
 pairs_split = re.compile(r"\r\n|\n\r|\n").split
+
 
 def performer_tag_replace(album, metadata, *args):
     replacements = []
@@ -114,5 +122,5 @@ class PerformerTagReplaceOptionsPage(OptionsPage):
 
 
 # Register the plugin to run at a LOW priority.
-register_track_metadata_processor(performer_tag_replace, priority=PluginPriority.LOW)
+register_track_metadata_processor(performer_tag_replace, priority=10)
 register_options_page(PerformerTagReplaceOptionsPage)

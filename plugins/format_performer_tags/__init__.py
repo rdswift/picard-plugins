@@ -25,9 +25,12 @@ tags.  It has been developed using the 'Standardise Performers' plugin by
 Sophist as the basis for retrieving and processing the performer data for
 each of the tracks.  The format of the resulting tags can be customized
 in the option settings page.
+<br /><br />
+Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_Plugins/plugins/format_performer_tags/docs/README.md">user
+guide</a> on GitHub for more information.
 '''
 
-PLUGIN_VERSION = "0.7"
+PLUGIN_VERSION = "0.8.2"
 PLUGIN_API_VERSIONS = ["2.0"]
 PLUGIN_LICENSE = "GPL-2.0-or-later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -56,7 +59,6 @@ def get_word_dict(settings):
 def rewrite_tag(key, values, metadata, word_dict, settings):
     if ':' not in key:
         mainkey = key
-        # subkey = UNSPECIFIED_INSTRUMENT
         subkey = ''
     else:
         mainkey, subkey = key.split(':', 1)
@@ -131,6 +133,7 @@ class FormatPerformerTagsOptionsPage(OptionsPage):
     NAME = "format_performer_tags"
     TITLE = "Format Performer Tags"
     PARENT = "plugins"
+    HELP_URL = "https://github.com/metabrainz/picard-plugins/blob/2.0/plugins/format_performer_tags/docs/README.md"
 
     options = [
         config.IntOption("setting", "format_group_additional", 3),
@@ -354,6 +357,6 @@ class FormatPerformerTagsOptionsPage(OptionsPage):
         return "\n".join(examples)
 
 
-# Register the plugin to run at a HIGH priority.
-register_track_metadata_processor(format_performer_tags, priority=PluginPriority.HIGH)
+# Register the plugin to run at a LOW priority.
+register_track_metadata_processor(format_performer_tags, priority=PluginPriority.LOW)
 register_options_page(FormatPerformerTagsOptionsPage)
