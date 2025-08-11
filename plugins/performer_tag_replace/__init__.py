@@ -17,6 +17,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
+import re
+
+from picard import config, log
+from picard.metadata import register_track_metadata_processor
+from picard.plugins.performer_tag_replace.ui_options_performer_tag_replace import \
+    Ui_PerformerTagReplaceOptionsPage
+from picard.ui.options import OptionsPage, register_options_page
+
 PLUGIN_NAME = 'Performer Tag Replace'
 PLUGIN_AUTHOR = 'Bob Swift (rdswift)'
 PLUGIN_DESCRIPTION = '''
@@ -30,7 +38,7 @@ Please see the <a href="https://github.com/rdswift/picard-plugins/blob/2.0_RDS_P
 guide</a> on GitHub for more information.
 '''
 
-PLUGIN_VERSION = "0.02"
+PLUGIN_VERSION = "0.03"
 PLUGIN_API_VERSIONS = ["2.0"]
 PLUGIN_LICENSE = "GPL-2.0 or later"
 PLUGIN_LICENSE_URL = "https://www.gnu.org/licenses/gpl-2.0.html"
@@ -39,19 +47,49 @@ PLUGIN_USER_GUIDE_URL = "https://github.com/rdswift/picard-plugins/blob/2.0_RDS_
 
 DEV_TESTING = False
 
-import re
-
-from picard import config, log
-from picard.metadata import register_track_metadata_processor
-from picard.plugin import PluginPriority
-from picard.plugins.performer_tag_replace.ui_options_performer_tag_replace import \
-    Ui_PerformerTagReplaceOptionsPage
-from picard.ui.options import OptionsPage, register_options_page
-
 pairs_split = re.compile(r"\r\n|\n\r|\n").split
 
 
-def performer_tag_replace(album, metadata, *args):
+def _update_track_metadata(track_metadata, replacements):
+    if 'recording' not in track_metadata or 'relations' not in track_metadata['recording']:
+        return
+
+    relations = []
+    for relation in track_metadata['recording']['relations']:
+        if 'type' in relation and relation['type'] in ['instrument', 'vocal']:
+
+            if 'attributes' in relation:
+                attributes = []
+                for attribute in relation['attributes']:
+                    for (original, replacement) in replacements:
+                        attribute = attribute.replace(original, replacement)
+                    attributes.append(attribute)
+                relation['attributes'] = attributes
+
+            if 'attribute-ids' in relation:
+                attribute_ids = {}
+                for key, value in relation['attribute-ids'].items():
+                    for (original, replacement) in replacements:
+                        key = key.replace(original, replacement)
+                    attribute_ids[key] = value
+                relation['attribute-ids'] = attribute_ids
+
+            if 'attribute-credits' in relation:
+                attribute_credits = {}
+                for key, value in relation['attribute-credits'].items():
+                    for (original, replacement) in replacements:
+                        key = key.replace(original, replacement)
+                    attribute_credits[key] = value
+                relation['attribute-credits'] = attribute_credits
+
+        relations.append(relation)
+
+    track_metadata['recording']['relations'] = relations
+
+    return
+
+
+def performer_tag_replace(album, metadata, track_metadata, *args):
     replacements = []
     for pair in pairs_split(config.setting["performer_tag_replacement_pairs"]):
         if "=" not in pair:
@@ -62,6 +100,7 @@ def performer_tag_replace(album, metadata, *args):
             if DEV_TESTING:
                 log.debug("%s: Add pair: '%s' = '%s'", PLUGIN_NAME, original, replacement,)
     if replacements:
+        _update_track_metadata(track_metadata, replacements)
         for key, values in list(metadata.rawitems()):
             if not key.startswith('performer:') and not key.startswith('~performersort:'):
                 continue
