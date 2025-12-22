@@ -55,7 +55,7 @@ def process_labels(album_id, source_metadata, destination_metadata):
             if 'catalog-number' in label_info and label_info['catalog-number']:
                 catalog_number_count += 1
                 catalog_number_list.append(label_info['catalog-number'])
-            if 'label' in label_info:
+            if 'label' in label_info and label_info['label']:
                 label_count += 1
                 label_data = label_info['label']
                 label_id_list.append(label_data['id'] if 'id' in label_data and label_data['id'] else 'Unknown-Label-ID')
